@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Catalog System</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        body {
+            background-color: #f5f7fb;
+            color: #333;
+            padding: 24px;
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+        header {
+            margin-bottom: 24px;
+        }
+        h1 {
+            font-size: 26px;
+            color: #1e293b;
+            margin-bottom: 6px;
+        }
+        .subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        .card-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 14px;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 8px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #475569;
+        }
+        input {
+            padding: 9px 12px;
+            font-size: 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            outline: none;
+            transition: border-color 0.15s ease;
+        }
+        input:focus {
+            border-color: #2563eb;
+        }
+        button {
+            padding: 9px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            background-color: #2563eb;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+        }
+        button:hover {
+            background-color: #1d4ed8;
+        }
+        button.secondary {
+            background-color: #f1f5f9;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+        }
+        button.secondary:hover {
+            background-color: #e2e8f0;
+        }
+        .actions-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .search-inline {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .search-inline input {
+            max-width: 220px;
+        }
+        .message-box {
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-bottom: 14px;
+            display: none;
+        }
+        .message-box.error {
+            display: block;
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+        .message-box.success {
+            display: block;
+            background-color: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        th, td {
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+        }
+        tr:hover td {
+            background-color: #f8fafc;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 24px;
+            color: #94a3b8;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Product Catalog System</h1>
+            <p class="subtitle">REST-enabled catalog dashboard for inventory operations</p>
+        </header>
+
+        <!-- Global Message Alert -->
+        <div id="messageBox" class="message-box"></div>
+
+        <!-- Section: Add Product (Menu Option 1) -->
+        <div class="card">
+            <h2 class="card-title">Add New Product</h2>
+            <form id="addProductForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="sku">SKU</label>
+                        <input type="text" id="sku" placeholder="e.g. P101" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" placeholder="e.g. Wireless Keyboard" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <input type="text" id="category" placeholder="e.g. Electronics" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="price">Price</label>
+                        <input type="number" id="price" step="0.01" min="0" placeholder="e.g. 1299" required>
+                    </div>
+                </div>
+                <!-- Menu Option 1: Add a product -->
+                <button type="submit" id="btnAdd">Add Product</button>
+            </form>
+        </div>
+
+        <!-- Section: Search and Filter Controls -->
+        <div class="card">
+            <h2 class="card-title">Catalog Actions & Searches</h2>
+            
+            <!-- Quick View and Sort Buttons -->
+            <div class="actions-bar">
+                <!-- Menu Option 2: Display all products -->
+                <button type="button" id="btnShowAll" class="secondary">Show All</button>
+                <!-- Menu Option 5: Sort by name -->
+                <button type="button" id="btnSortName" class="secondary">Sort by Name</button>
+                <!-- Menu Option 6: Sort by price -->
+                <button type="button" id="btnSortPrice" class="secondary">Sort by Price</button>
+            </div>
+
+            <!-- Menu Option 3: Search by Category -->
+            <div class="search-inline">
+                <input type="text" id="searchCategoryInput" placeholder="Category name...">
+                <button type="button" id="btnSearchCategory" class="secondary">Search by Category</button>
+            </div>
+
+            <!-- Menu Option 4: Search by Price -->
+            <div class="search-inline">
+                <input type="number" id="searchMinPrice" step="0.01" placeholder="Min price...">
+                <input type="number" id="searchMaxPrice" step="0.01" placeholder="Max price...">
+                <button type="button" id="btnSearchPrice" class="secondary">Search by Price</button>
+            </div>
+        </div>
+
+        <!-- Section: Results Table -->
+        <div class="card">
+            <h2 class="card-title">Products Table</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>SKU</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody id="productTableBody">
+                    <tr>
+                        <td colspan="4" class="empty-state">No products found</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api/products';
+        const messageBox = document.getElementById('messageBox');
+        const tableBody = document.getElementById('productTableBody');
+
+        function showMessage(msg, isError) {
+            messageBox.textContent = msg;
+            messageBox.className = 'message-box ' + (isError ? 'error' : 'success');
+        }
+
+        function clearMessage() {
+            messageBox.textContent = '';
+            messageBox.className = 'message-box';
+        }
+
+        function renderProducts(products) {
+            tableBody.innerHTML = '';
+            if (!products || products.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = '<td colspan="4" class="empty-state">No products found</td>';
+                tableBody.appendChild(tr);
+                return;
+            }
+
+            for (let i = 0; i < products.length; i++) {
+                const p = products[i];
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${escapeHtml(p.sku)}</td>
+                    <td>${escapeHtml(p.name)}</td>
+                    <td>${escapeHtml(p.category)}</td>
+                    <td>₹${Number(p.price).toFixed(2)}</td>
+                `;
+                tableBody.appendChild(tr);
+            }
+        }
+
+        function escapeHtml(text) {
+            if (text === null || text === undefined) return '';
+            return String(text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // Option 1: POST /api/products (Add product)
+        document.getElementById('addProductForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            clearMessage();
+
+            const sku = document.getElementById('sku').value.trim();
+            const name = document.getElementById('name').value.trim();
+            const category = document.getElementById('category').value.trim();
+            const price = parseFloat(document.getElementById('price').value);
+
+            try {
+                const response = await fetch(API_BASE, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sku: sku, name: name, category: category, price: price })
+                });
+
+                const data = await response.json();
+                if (!response.ok) {
+                    showMessage(data.message || 'Failed to add product', true);
+                } else {
+                    showMessage('Product added successfully: ' + data.name, false);
+                    document.getElementById('addProductForm').reset();
+                    await fetchAllProducts();
+                }
+            } catch (err) {
+                showMessage('Network error: ' + err.message, true);
+            }
+        });
+
+        // Option 2: GET /api/products (Show all products)
+        async function fetchAllProducts() {
+            clearMessage();
+            try {
+                const res = await fetch(API_BASE);
+                const data = await res.json();
+                if (res.ok) {
+                    renderProducts(data);
+                } else {
+                    showMessage(data.message || 'Error fetching products', true);
+                }
+            } catch (err) {
+                showMessage('Network error: ' + err.message, true);
+            }
+        }
+        document.getElementById('btnShowAll').addEventListener('click', fetchAllProducts);
+
+        // Option 3: GET /api/products/category/{category} (Search by category)
+        document.getElementById('btnSearchCategory').addEventListener('click', async function() {
+            clearMessage();
+            const cat = document.getElementById('searchCategoryInput').value.trim();
+            if (!cat) {
+                showMessage('Please enter a category to search', true);
+                return;
+            }
+            try {
+                const res = await fetch(API_BASE + '/category/' + encodeURIComponent(cat));
+                const data = await res.json();
+                if (res.ok) {
+                    renderProducts(data);
+                } else {
+                    showMessage(data.message || 'Error searching by category', true);
+                }
+            } catch (err) {
+                showMessage('Network error: ' + err.message, true);
+            }
+        });
+
+        // Option 4: GET /api/products/price?min=..&max=.. (Search by price range)
+        document.getElementById('btnSearchPrice').addEventListener('click', async function() {
+            clearMessage();
+            const min = document.getElementById('searchMinPrice').value;
+            const max = document.getElementById('searchMaxPrice').value;
+            if (min === '' || max === '') {
+                showMessage('Please enter both min and max price', true);
+                return;
+            }
+            try {
+                const url = API_BASE + '/price?min=' + encodeURIComponent(min) + '&max=' + encodeURIComponent(max);
+                const res = await fetch(url);
+                const data = await res.json();
+                if (res.ok) {
+                    renderProducts(data);
+                } else {
+                    showMessage(data.message || 'Error searching by price', true);
+                }
+            } catch (err) {
+                showMessage('Network error: ' + err.message, true);
+            }
+        });
+
+        // Option 5: GET /api/products/sort/name (Sort by name)
+        document.getElementById('btnSortName').addEventListener('click', async function() {
+            clearMessage();
+            try {
+                const res = await fetch(API_BASE + '/sort/name');
+                const data = await res.json();
+                if (res.ok) {
+                    renderProducts(data);
+                } else {
+                    showMessage(data.message || 'Error sorting by name', true);
+                }
+            } catch (err) {
+                showMessage('Network error: ' + err.message, true);
+            }
+        });
+
+        // Option 6: GET /api/products/sort/price (Sort by price)
+        document.getElementById('btnSortPrice').addEventListener('click', async function() {
+            clearMessage();
+            try {
+                const res = await fetch(API_BASE + '/sort/price');
+                const data = await res.json();
+                if (res.ok) {
+                    renderProducts(data);
+                } else {
+                    showMessage(data.message || 'Error sorting by price', true);
+                }
+            } catch (err) {
+                showMessage('Network error: ' + err.message, true);
+            }
+        });
+
+        // Initial load
+        fetchAllProducts();
+    </script>
+</body>
+</html>
